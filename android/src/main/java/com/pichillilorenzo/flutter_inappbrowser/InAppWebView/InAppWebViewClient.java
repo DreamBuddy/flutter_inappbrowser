@@ -167,7 +167,7 @@ public class InAppWebViewClient extends WebViewClient {
       }
     } else if (!(url.startsWith("http://")||url.startsWith("https://"))) {
       Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-      view.getContext().startActivity(intent);
+      ((inAppBrowserActivity != null) ? inAppBrowserActivity : flutterWebView.activity).startActivity(intent);
       return true;
     }
 
