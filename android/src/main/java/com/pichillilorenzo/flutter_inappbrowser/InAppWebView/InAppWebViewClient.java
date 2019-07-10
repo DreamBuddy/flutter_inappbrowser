@@ -165,6 +165,10 @@ public class InAppWebViewClient extends WebViewClient {
       } catch (android.content.ActivityNotFoundException e) {
         Log.e(LOG_TAG, "Error sending sms " + url + ":" + e.toString());
       }
+    } else if (!(url.startsWith("http://")||url.startsWith("https://"))) {
+      Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+      view.getContext().startActivity(intent);
+      return true;
     }
 
     return super.shouldOverrideUrlLoading(webView, url);
