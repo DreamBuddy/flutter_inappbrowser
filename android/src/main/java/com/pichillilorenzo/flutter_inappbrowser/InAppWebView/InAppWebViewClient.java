@@ -166,8 +166,12 @@ public class InAppWebViewClient extends WebViewClient {
         Log.e(LOG_TAG, "Error sending sms " + url + ":" + e.toString());
       }
     } else if (!(url.startsWith("http://")||url.startsWith("https://"))) {
-      Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-      ((inAppBrowserActivity != null) ? inAppBrowserActivity : flutterWebView.activity).startActivity(intent);
+      try {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        ((inAppBrowserActivity != null) ? inAppBrowserActivity : flutterWebView.activity).startActivity(intent);
+      } catch (Exception e) {
+        // TODO: handle exception
+      }
       return true;
     }
 

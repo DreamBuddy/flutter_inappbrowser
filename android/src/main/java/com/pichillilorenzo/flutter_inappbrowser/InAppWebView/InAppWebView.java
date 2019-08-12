@@ -36,6 +36,10 @@ import io.flutter.plugin.common.PluginRegistry;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 
+import android.webkit.DownloadListener;
+import android.content.Intent;
+import android.net.Uri;
+
 public class InAppWebView extends WebView {
 
   static final String LOG_TAG = "InAppWebView";
@@ -122,39 +126,17 @@ public class InAppWebView extends WebView {
     inAppWebViewClient = new InAppWebViewClient((isFromInAppBrowserActivity) ? inAppBrowserActivity : flutterWebView);
     setWebViewClient(inAppWebViewClient);
 
-//        final Activity activity = this;
-//
-//        webView.setDownloadListener(new DownloadListener() {
-//            @Override
-//            public void onDownloadStart(final String url, final String userAgent,
-//                                        final String contentDisposition, final String mimetype,
-//                                        final long contentLength) {
-//
-//                RequestPermissionHandler.checkAndRun(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE, RequestPermissionHandler.REQUEST_CODE_WRITE_EXTERNAL_STORAGE, new Runnable(){
-//                    @Override
-//                    public void run(){
-//                        DownloadManager.Request request = new DownloadManager.Request(
-//                                Uri.parse(url));
-//
-//                        final String filename = URLUtil.guessFileName(url, contentDisposition, mimetype);
-//                        request.allowScanningByMediaScanner();
-//                        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED); //Notify client once download is completed!
-//                        request.setVisibleInDownloadsUi(true);
-//                        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename);
-//                        DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
-//                        if (dm != null) {
-//                            dm.enqueue(request);
-//                            Toast.makeText(getApplicationContext(), "Downloading File: " + filename, //To notify the Client that the file is being downloaded
-//                                    Toast.LENGTH_LONG).show();
-//                        }
-//                        else {
-//                            Toast.makeText(getApplicationContext(), "Cannot Download File: " + filename, //To notify the Client that the file cannot be downloaded
-//                                    Toast.LENGTH_LONG).show();
-//                        }
-//                    }
-//                });
-//            }
-//        });
+    // 开启网页下载功能
+    this.setDownloadListener(new DownloadListener() {
+      @Override
+      public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimeType, long contentLength) {
+          // H5中包含下载链接的话让外部浏览器去处理
+          Intent intent = new Intent(Intent.ACTION_VIEW);
+          intent.addCategory(Intent.CATEGORY_BROWSABLE);
+          intent.setData(Uri.parse(url));
+          registrar.activeContext().startActivity(intent);
+      }
+    });
 
     WebSettings settings = getSettings();
 
